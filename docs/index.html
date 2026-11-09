@@ -42,9 +42,17 @@ details summary{cursor:pointer;color:var(--mu);font-size:13px}
 <div class="card">
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="row">
-    <input type="text" id="q" placeholder="Suche in allen Spalten (z. B. Volksbank, AT, BingX)" aria-label="Suche">
-    <label>Neu seit <input type="date" id="since"></label>
+    <input type="text" id="q" placeholder="Suche in allen Spalten (z. B. Volksbank, BingX)" aria-label="Suche">
+  </div>
+  <div class="row" style="margin-top:8px">
+    <label>Land <select id="country"></select></label>
+    <label id="svcw">Dienstleistung <select id="svc"></select></label>
+    <label><span id="datelbl">Zulassung seit</span> <input type="date" id="adate"></label>
+    <button id="reset" type="button">Filter zurücksetzen</button>
+  </div>
+  <div class="row" style="margin-top:8px">
     <label><input type="checkbox" id="active" checked> nur aktuell enthaltene</label>
+    <label>Im Spiegel neu seit <input type="date" id="since"></label>
   </div>
   <p class="info" id="meta"></p>
   <div class="tw"><table id="tbl"></table></div>
@@ -95,12 +103,37 @@ function render(tbl,res,hide){
     tb.appendChild(t)});
   tbl.appendChild(tb);
 }
+var COUNTRIES={AT:"Österreich",BE:"Belgien",BG:"Bulgarien",HR:"Kroatien",CY:"Zypern",CZ:"Tschechien",DK:"Dänemark",EE:"Estland",FI:"Finnland",FR:"Frankreich",DE:"Deutschland",GR:"Griechenland",HU:"Ungarn",IE:"Irland",IS:"Island",IT:"Italien",LV:"Lettland",LI:"Liechtenstein",LT:"Litauen",LU:"Luxemburg",MT:"Malta",NL:"Niederlande",NO:"Norwegen",PL:"Polen",PT:"Portugal",RO:"Rumänien",SK:"Slowakei",SI:"Slowenien",ES:"Spanien",SE:"Schweden"};
+var SERVICES=[["a","a – Verwahrung und Verwaltung"],["b","b – Handelsplattform"],["c","c – Tausch Krypto gegen Geld"],["d","d – Tausch Krypto gegen Krypto"],["e","e – Ausführung von Aufträgen"],["f","f – Platzierung"],["g","g – Annahme und Weiterleitung von Aufträgen"],["h","h – Beratung"],["i","i – Portfolioverwaltung"],["j","j – Transferdienste"]];
+var DATECFG={casps:["ac_authorisationNotificationDate_iso","Zulassung seit"],emtwp:["ac_authorisationNotificationDate_iso","Zulassung seit"],ncasp:["ae_decision_date_iso","Entscheidung seit"],other:["wp_lastupdate_iso","Letzte Änderung seit"]};
+function fillSelect(sel,items,allLabel,keep){
+  sel.textContent="";
+  var o=document.createElement("option");o.value="";o.textContent=allLabel;sel.appendChild(o);
+  items.forEach(function(i){var x=document.createElement("option");x.value=i[0];x.textContent=i[1];sel.appendChild(x)});
+  if(keep&&items.some(function(i){return i[0]===keep}))sel.value=keep;
+}
+function setupFilters(){
+  var cs=cols(cur),keepC=$("country").value;
+  var hasC=cs.indexOf("ae_homeMemberState")>-1;
+  $("country").parentNode.style.display=hasC?"":"none";
+  if(hasC){
+    var vals=qall('SELECT DISTINCT ae_homeMemberState FROM "'+cur+'" WHERE ae_homeMemberState<>\'\' ORDER BY 1').rows.map(function(r){return r[0]});
+    fillSelect($("country"),vals.map(function(v){return[v,v+(COUNTRIES[v]?" – "+COUNTRIES[v]:"")]}),"Alle Länder",keepC);
+  }
+  var hasS=cs.indexOf("ac_serviceCode")>-1;
+  $("svcw").style.display=hasS?"":"none";
+  if(hasS)fillSelect($("svc"),SERVICES,"Alle Dienstleistungen",$("svc").value);
+  var dc=DATECFG[cur];
+  var hasD=dc&&cs.indexOf(dc[0])>-1;
+  $("adate").parentNode.style.display=hasD?"":"none";
+  if(hasD)$("datelbl").textContent=dc[1];else $("adate").value="";
+}
 function tabs(){
   var el=$("tabs");el.textContent="";
   TABLES.forEach(function(t){
     var b=document.createElement("button");b.textContent=t[1];b.setAttribute("role","tab");
     if(t[0]===cur)b.className="on";
-    b.onclick=function(){cur=t[0];sortCol=null;tabs();load()};el.appendChild(b)});
+    b.onclick=function(){cur=t[0];sortCol=null;$("adate").value="";tabs();setupFilters();load()};el.appendChild(b)});
 }
 function cols(table){return qall('PRAGMA table_info("'+table+'")').rows.map(function(r){return r[1]})}
 function load(){
@@ -109,6 +142,10 @@ function load(){
   var where=[],p=[];
   if($("active").checked)where.push("_removed_at IS NULL");
   if($("since").value){where.push("_first_seen >= ?");p.push($("since").value)}
+  if($("country").parentNode.style.display!=="none"&&$("country").value){where.push("ae_homeMemberState = ?");p.push($("country").value)}
+  if($("svcw").style.display!=="none"&&$("svc").value){where.push("(' | '||ac_serviceCode||' | ') LIKE ?");p.push("% | "+$("svc").value+". %")}
+  var dc=DATECFG[cur];
+  if(dc&&$("adate").parentNode.style.display!=="none"&&$("adate").value){where.push('"'+dc[0]+'" >= ?');p.push($("adate").value)}
   var q=$("q").value.trim().toLowerCase();
   if(q){
     var data=cs.filter(function(c){return c.charAt(0)!=="_"});
@@ -153,8 +190,9 @@ function init(SQL,buf){
   DB=new SQL.Database(new Uint8Array(buf));
   var ex=$("ex");EXAMPLES.forEach(function(e){var b=document.createElement("button");b.textContent=e[0];b.onclick=function(){$("sql").value=e[1];run()};ex.appendChild(b)});
   $("sql").value=EXAMPLES[1][1];
-  tabs();load();run();
-  ["q","since","active"].forEach(function(i){$(i).addEventListener("input",load)});
+  tabs();setupFilters();load();run();
+  ["q","since","active","country","svc","adate"].forEach(function(i){$(i).addEventListener("input",load)});
+  $("reset").onclick=function(){["q","since","adate"].forEach(function(i){$(i).value=""});$("country").value="";$("svc").value="";$("active").checked=true;load()};
   $("run").onclick=run;
   $("sql").addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key==="Enter")run()});
   $("csv1").onclick=function(){dl(cur+".csv",lastRes)};
