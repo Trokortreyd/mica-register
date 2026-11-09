@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MiCA-Register (ESMA) – durchsuchbar</title>
+<style>
+:root{--bg:#fafaf7;--card:#fff;--tx:#1f1e1d;--mu:#6b6a66;--bd:#dcdad3;--ac:#185fa5;--acbg:#e6f1fb;--er:#a32d2d}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1b1a;--card:#262523;--tx:#ecebe6;--mu:#a3a199;--bd:#3d3b38;--ac:#85b7eb;--acbg:#0c447c;--er:#f09595}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1280px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:22px;font-weight:500;margin:0 0 4px}
+.sub{color:var(--mu);font-size:13px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+label{font-size:13px;color:var(--mu)}
+input,select,textarea,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:7px 10px}
+input[type=text]{flex:1;min-width:180px}
+button{cursor:pointer}button:hover{border-color:var(--ac)}
+button.pri{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+textarea{width:100%;min-height:90px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tabs button.on{background:var(--acbg);border-color:var(--ac);color:var(--ac)}
+.tw{overflow:auto;max-height:560px;border:1px solid var(--bd);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;font-weight:500;color:var(--mu)}
+tr.gone td{opacity:.5}
+.info{font-size:13px;color:var(--mu);margin:8px 0 0}
+.err{color:var(--er);font-size:13px;margin-top:6px;white-space:pre-wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.chips button{font-size:12px;padding:4px 9px}
+details summary{cursor:pointer;color:var(--mu);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<h1>MiCA-Register der ESMA</h1>
+<p class="sub" id="status">Lade Datenbank …</p>
+
+<div class="card">
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="row">
+    <input type="text" id="q" placeholder="Suche in allen Spalten (z. B. Volksbank, AT, BingX)" aria-label="Suche">
+    <label>Neu seit <input type="date" id="since"></label>
+    <label><input type="checkbox" id="active" checked> nur aktuell enthaltene</label>
+  </div>
+  <p class="info" id="meta"></p>
+  <div class="tw"><table id="tbl"></table></div>
+  <p class="info"><button id="csv1">Tabelle als CSV exportieren</button></p>
+</div>
+
+<div class="card">
+  <div class="row"><strong>SQL-Abfrage</strong><span class="info" style="margin:0">läuft komplett in deinem Browser, nur lesend</span></div>
+  <textarea id="sql" spellcheck="false" aria-label="SQL"></textarea>
+  <div class="row" style="margin-top:8px"><button class="pri" id="run">Ausführen</button><button id="csv2">Ergebnis als CSV</button></div>
+  <div class="chips" id="ex"></div>
+  <div class="err" id="err"></div>
+  <p class="info" id="rmeta"></p>
+  <div class="tw"><table id="rtbl"></table></div>
+  <details style="margin-top:10px"><summary>Hinweise zu den Spalten</summary>
+  <p class="info">Zu jeder CSV-Spalte gibt es bei Datumsfeldern (TT/MM/JJJJ) eine Spalte mit Endung <code>_iso</code> (JJJJ-MM-TT) zum Filtern und Sortieren.
+  <code>_first_seen</code> ist der Tag, an dem dieser Spiegel die Zeile zum ersten Mal gesehen hat (nicht das Datum der ESMA-Aufnahme; beim allerersten Lauf tragen alle Zeilen das Startdatum).
+  <code>_removed_at</code> ist der Tag, an dem die Zeile aus der CSV verschwunden ist, leer bedeutet aktuell enthalten.
+  Wird eine Zeile bei der ESMA geändert, erscheint sie als neue Zeile, die alte bekommt <code>_removed_at</code>.
+  Die View <code>casps_entities</code> fasst die CASPs pro LEI zusammen.</p></details>
+</div>
+<p class="info">Inoffizieller Spiegel des ESMA Interim MiCA Registers. Verbindlich ist nur die <a href="https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica" style="color:var(--ac)">ESMA-Seite</a>.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+<script>
+var TABLES=[["casps","CASPs"],["ncasp","Non-compliant"],["emtwp","EMT-Emittenten"],["artzz","ART-Emittenten"],["other","White Papers (sonstige)"]];
+var DB=null,cur="casps",sortCol=null,sortDir=1,lastRes=null;
+var $=function(i){return document.getElementById(i)};
+
+function qall(sql,params){
+  var st=DB.prepare(sql);if(params)st.bind(params);
+  var cols=st.getColumnNames(),rows=[];
+  while(st.step())rows.push(st.get());
+  st.free();return{cols:cols,rows:rows};
+}
+function render(tbl,res,hide){
+  tbl.textContent="";
+  var idx=[];res.cols.forEach(function(c,i){if(!(hide&&hide.indexOf(c)>-1))idx.push(i)});
+  var thead=document.createElement("thead"),tr=document.createElement("tr");
+  idx.forEach(function(i){var th=document.createElement("th");th.textContent=res.cols[i];th.onclick=function(){
+    if(tbl.id==="tbl"){sortDir=sortCol===res.cols[i]?-sortDir:1;sortCol=res.cols[i];load()}
+  };tr.appendChild(th)});
+  thead.appendChild(tr);tbl.appendChild(thead);
+  var tb=document.createElement("tbody"),rem=res.cols.indexOf("_removed_at");
+  res.rows.forEach(function(r){
+    var t=document.createElement("tr");if(rem>-1&&r[rem])t.className="gone";
+    idx.forEach(function(i){var td=document.createElement("td");var v=r[i];td.textContent=v===null?"":String(v);td.title=td.textContent;t.appendChild(td)});
+    tb.appendChild(t)});
+  tbl.appendChild(tb);
+}
+function tabs(){
+  var el=$("tabs");el.textContent="";
+  TABLES.forEach(function(t){
+    var b=document.createElement("button");b.textContent=t[1];b.setAttribute("role","tab");
+    if(t[0]===cur)b.className="on";
+    b.onclick=function(){cur=t[0];sortCol=null;tabs();load()};el.appendChild(b)});
+}
+function cols(table){return qall('PRAGMA table_info("'+table+'")').rows.map(function(r){return r[1]})}
+function load(){
+  var cs;try{cs=cols(cur)}catch(e){cs=[]}
+  if(!cs.length){$("meta").textContent="Tabelle nicht vorhanden.";$("tbl").textContent="";return}
+  var where=[],p=[];
+  if($("active").checked)where.push("_removed_at IS NULL");
+  if($("since").value){where.push("_first_seen >= ?");p.push($("since").value)}
+  var q=$("q").value.trim().toLowerCase();
+  if(q){
+    var data=cs.filter(function(c){return c.charAt(0)!=="_"});
+    where.push("lower("+data.map(function(c){return "coalesce(\""+c+"\",'')"}).join("||' '||")+") LIKE ?");
+    p.push("%"+q+"%");
+  }
+  var base="FROM \""+cur+"\""+(where.length?" WHERE "+where.join(" AND "):"");
+  var total=qall("SELECT count(*) "+base,p).rows[0][0];
+  var order=sortCol&&cs.indexOf(sortCol)>-1?"\""+sortCol+"\" "+(sortDir>0?"ASC":"DESC"):"_first_seen DESC, rowid DESC";
+  var res=qall("SELECT * "+base+" ORDER BY "+order+" LIMIT 500",p);
+  $("meta").textContent=total+" Treffer"+(total>500?" (erste 500 angezeigt, Spalte anklicken zum Sortieren, Einschränken oder SQL nutzen)":"");
+  render($("tbl"),res,["_key"]);lastRes=res;
+}
+function csvOf(res){
+  var esc=function(v){v=v===null?"":String(v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  return [res.cols.map(esc).join(",")].concat(res.rows.map(function(r){return r.map(esc).join(",")})).join("\n");
+}
+function dl(name,res){
+  if(!res){return}
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csvOf(res)],{type:"text/csv"}));
+  a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+var resSql=null;
+function run(){
+  $("err").textContent="";
+  var sql=$("sql").value.trim();
+  if(!/^(select|with|pragma\s+table_info|explain)\b/i.test(sql)){$("err").textContent="Nur SELECT-Abfragen sind erlaubt.";return}
+  try{
+    var r=qall(sql.replace(/;+\s*$/,""));resSql=r;
+    $("rmeta").textContent=r.rows.length+" Zeilen"+(r.rows.length>2000?" (erste 2000 angezeigt)":"");
+    render($("rtbl"),{cols:r.cols,rows:r.rows.slice(0,2000)});
+  }catch(e){$("err").textContent=String(e.message||e)}
+}
+var EXAMPLES=[
+ ["CASPs pro Land","SELECT ae_homeMemberState AS land, count(*) AS anzahl FROM casps WHERE _removed_at IS NULL GROUP BY 1 ORDER BY 2 DESC"],
+ ["Zuletzt geänderte CASPs","SELECT ae_lei_name, ae_homeMemberState, ac_serviceCode, ac_lastupdate, ac_lastupdate_iso FROM casps WHERE _removed_at IS NULL ORDER BY ac_lastupdate_iso DESC LIMIT 50"],
+ ["Zulassung am 5.11.2026","SELECT ae_lei_name, ae_homeMemberState, ae_competentAuthority, ac_authorisationNotificationDate FROM casps WHERE ac_authorisationNotificationDate_iso = '2026-11-05'"],
+ ["Aus Register verschwunden","SELECT * FROM casps WHERE _removed_at IS NOT NULL ORDER BY _removed_at DESC LIMIT 50"],
+ ["CASPs pro LEI (View)","SELECT * FROM casps_entities ORDER BY erstmals_gesehen DESC LIMIT 100"]
+];
+function init(SQL,buf){
+  DB=new SQL.Database(new Uint8Array(buf));
+  var ex=$("ex");EXAMPLES.forEach(function(e){var b=document.createElement("button");b.textContent=e[0];b.onclick=function(){$("sql").value=e[1];run()};ex.appendChild(b)});
+  $("sql").value=EXAMPLES[1][1];
+  tabs();load();run();
+  ["q","since","active"].forEach(function(i){$(i).addEventListener("input",load)});
+  $("run").onclick=run;
+  $("sql").addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key==="Enter")run()});
+  $("csv1").onclick=function(){dl(cur+".csv",lastRes)};
+  $("csv2").onclick=function(){dl("abfrage.csv",resSql)};
+}
+fetch("status.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(s){
+  var d=new Date(s.last_checked);
+  var parts=Object.keys(s.registers).map(function(k){return k+": "+s.registers[k].rows});
+  $("status").textContent="Zuletzt abgerufen: "+d.toLocaleString("de-AT")+" · Zeilen: "+parts.join(", ")+(Object.keys(s.errors||{}).length?" · Fehler: "+Object.keys(s.errors).join(", "):"");
+}).catch(function(){$("status").textContent=""});
+Promise.all([
+  initSqlJs({locateFile:function(f){return "https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/"+f}}),
+  fetch("mica.db",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("mica.db nicht gefunden");return r.arrayBuffer()})
+]).then(function(a){init(a[0],a[1])}).catch(function(e){$("status").textContent="Fehler beim Laden: "+e.message});
+</script>
+</body>
+</html>
