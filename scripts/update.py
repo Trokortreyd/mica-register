@@ -68,15 +68,16 @@ def parse(text):
     if not rows:
         raise ValueError("leere CSV")
     header = [h.strip() for h in rows[0]]
+    keep = [i for i, h in enumerate(header) if h]  # leere Spalten (Komma am Zeilenende) ignorieren
     seen, cols = {}, []
-    for h in header:
-        h = re.sub(r"\W+", "_", h).strip("_") or "col"
+    for i in keep:
+        h = re.sub(r"\W+", "_", header[i]).strip("_") or "col"
         seen[h] = seen.get(h, 0) + 1
         cols.append(h if seen[h] == 1 else f"{h}_{seen[h]}")
     out = []
     for r in rows[1:]:
-        r = (r + [""] * len(cols))[: len(cols)]
-        out.append({c: v.strip() for c, v in zip(cols, r)})
+        r = r + [""] * (len(header) - len(r))
+        out.append({c: r[i].strip() for c, i in zip(cols, keep)})
     return cols, out
 
 
