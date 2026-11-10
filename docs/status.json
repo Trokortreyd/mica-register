@@ -1,21 +1,21 @@
 {
-  "last_checked": "2026-11-09T12:57:14Z",
+  "last_checked": "2026-11-10T13:29:57Z",
   "registers": {
     "casps": {
       "rows": 397,
-      "added": 397,
+      "added": 0,
       "removed": 0,
       "reactivated": 0
     },
     "ncasp": {
       "rows": 189,
-      "added": 189,
+      "added": 0,
       "removed": 0,
       "reactivated": 0
     },
     "emtwp": {
       "rows": 48,
-      "added": 48,
+      "added": 0,
       "removed": 0,
       "reactivated": 0
     },
@@ -27,7 +27,7 @@
     },
     "other": {
       "rows": 1068,
-      "added": 1068,
+      "added": 0,
       "removed": 0,
       "reactivated": 0
     }
