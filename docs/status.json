@@ -1,22 +1,22 @@
 {
-  "last_checked": "2026-11-11T12:45:47Z",
+  "last_checked": "2026-11-12T13:47:53Z",
   "registers": {
     "casps": {
-      "rows": 397,
-      "added": 0,
-      "removed": 0,
+      "rows": 407,
+      "added": 51,
+      "removed": 41,
       "reactivated": 0
     },
     "ncasp": {
-      "rows": 189,
-      "added": 0,
-      "removed": 0,
+      "rows": 216,
+      "added": 29,
+      "removed": 2,
       "reactivated": 0
     },
     "emtwp": {
-      "rows": 48,
-      "added": 0,
-      "removed": 0,
+      "rows": 49,
+      "added": 10,
+      "removed": 9,
       "reactivated": 0
     },
     "artzz": {
@@ -26,9 +26,9 @@
       "reactivated": 0
     },
     "other": {
-      "rows": 1068,
-      "added": 0,
-      "removed": 0,
+      "rows": 1074,
+      "added": 14,
+      "removed": 8,
       "reactivated": 0
     }
   },
