@@ -1,11 +1,11 @@
 {
-  "last_checked": "2026-11-20T14:04:03Z",
+  "last_checked": "2026-11-21T13:29:50Z",
   "registers": {
     "casps": {
-      "rows": 408,
+      "rows": 409,
       "added": 0,
       "removed": 0,
-      "reactivated": 0
+      "reactivated": 1
     },
     "ncasp": {
       "rows": 217,
