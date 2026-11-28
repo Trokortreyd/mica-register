@@ -1,6 +1,6 @@
 ﻿ae_competentAuthority,ae_homeMemberState,ae_lei_name,ae_lei,ae_lei_cou_code,ae_lei_name_casp,ae_lei_casp,ae_offerCode_cou,ae_DTI_FFG,ae_DTI,wp_url,wp_comments,wp_lastupdate
 Austrian Financial Market Authority (FMA),AT,SKYGATE Network GmbH,984500BBFE52FE449926,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE,,,WWW.SKYGATETOKEN.AT,,30/12/2024
-Austrian Financial Market Authority (FMA),AT,DGRX Sales GmbH,984500R35C7N1E698319,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IS|IE|IT|LV|LI|LT|LU|MT|NL|NO|PL|PT|RO|SK|SI|ES|SE,9791F79LM,D0TGQ87MM,WWW.DESERTGREENER.IO,,01/04/2026
+Austrian Financial Market Authority (FMA),AT,DGRX Sales GmbH,984500R35C7N1E698319,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IS|IE|IT|LV|LI|LT|LU|MT|NL|NO|PL|PT|RO|SK|SI|ES|SE,9791F79LM,D0TGQ87MM,WWW.DESERTGREENER.IO,,30/11/2026
 Austrian Financial Market Authority (FMA),AT,Bitpanda GmbH,5493007WZ7IFULIL8G21,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE,,,https://www.bitpanda.com/en/legal/vsn-white-paper,,11/08/2026
 Austrian Financial Market Authority (FMA),AT,ATEG Capital FlexCo,529900B1HYZ5I6QQRL52,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE,,,https://ateg-capital.com,,03/10/2025
 Austrian Financial Market Authority (FMA),AT,SC STEELCOIN GmbH,529900OX94239BUDFN51,AT,,,AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IS|IE|IT|LV|LI|LT|LU|MT|NL|NO|PL|PT|RO|SK|SI|ES|SE,,XBL17BS2C,https://steelcoin.com/,,20/10/2026
@@ -667,6 +667,14 @@ Central Bank of Ireland (CBI),IE,PVP Group Limited,984500CYFF8GAD6EC955,VG,,,,19
 Central Bank of Ireland (CBI),IE,SELF Technology Limited,,,Payward Global Solutions Limited,9845003D98SCC2851458,,CKTHNVM6Z,CKTHNVM6Z,https://docs.self.app/micawhitepaper,,06/11/2026
 Central Bank of Ireland (CBI),IE,BitUtility S.A.,9845004BE14DFCFB9516,PA,Payward Global Solutions LTD,9845003D98SCC2851458,,R5XBJBLKG,M9CQ06K3F,bitutility.micarwhitepapers.eu,,06/11/2026
 Central Bank of Ireland (CBI),IE,Strato Foundation,2549005ICRB8P6S7T350,KY,,,,CMQ8JCV3S,N085LHV79 | 5CCCH8ZG4,https://strato.nexus/mica,,06/11/2026
+Central Bank of Ireland (CBI),IE,K2 Digital Assets LLC,,,,,,J61XZ1CW6,RM2ZQQKHW,https://www.k2powerblock.com/whitepaper,,20/11/2026
+Central Bank of Ireland (CBI),IE,Axis Robotics Limited,254900O71GPRAB092V10,,,,,PXM7WKQWL,JK6K8X2NH,https://axisrobotics.ai/mica_whitepaper/,Art.12 Mod,20/11/2026
+Central Bank of Ireland (CBI),IE,Reasoon Limited,648800JZ7E8VPYLRTB37,,,,,PPDH6B273,"M5D76SHV5, J7WG2WKPP",https://dash.eunice.ai/mica_whitepaper,,20/11/2026
+Central Bank of Ireland (CBI),IE,MINI LABS CORP.,,PA,,,,T3SNF59JM,P6GSVTXB3,https://minicoin.xyz/whitepaper-mica,Art.12 Mod,20/11/2026
+Central Bank of Ireland (CBI),IE,"Xsolla ZK, Inc.",,,"Payward Global Solutions Limited (Kraken); Bitvavo B.V.
+",254900641D8KNHUZYX24; 724500MX2WBKDJP9HE56,,MC9P0SP20,Ethereum: DGZVR1P69 / Xsolla ZK: XD7S4RNB7,https://xsolla.org/mica-whitepaper.html,,20/11/2026
+Central Bank of Ireland (CBI),IE,Metaco Intelligence Foundation,984500067FABE8B3C405,,,,,2ZLFKQFVN,VN366CT6J,https://www.zoth.io/,,20/11/2026
+Central Bank of Ireland (CBI),IE,Ultima Liquiditas JE Ltd.,984500E0LJ1003E4C014,,,,,7ZT7NZ5DW,ZMNSCV4GS,https://jumper.xyz/it,,20/11/2026
 Commissione Nazionale per le Societa e la Borsa (CONSOB),IT,Camino Network Foundation ,,CH,,,,,,https://camino.network/static/docs/Camino_Network_Whitepaper.pdf#view=fit,,12/03/2025
 Commissione Nazionale per le Societa e la Borsa (CONSOB),IT,Poseidon 133 PTE. LTD,,SG,,,,,,https://gunzillagames.com/en/about/,,18/06/2025
 Commissione Nazionale per le Societa e la Borsa (CONSOB),IT,RIVER ERIDANUS ASSOCIATION,,CH,,,,,, https://www.towns.com/mica-whitepaper.pdf,,22/07/2025
@@ -1024,6 +1032,9 @@ Malta Financial Services Authority (MFSA),MT,Pons Labs LLC,,US,,,,F5V1Z6TC2,HW5V
 Malta Financial Services Authority (MFSA),MT,Bera Chain Foundation,,MT,,,,L7XQXLN44,C75S6N2RJ,https://my.okx.com/whitepaper/berachain-bera.xhtml,Modified,10/11/2026
 Malta Financial Services Authority (MFSA),MT,Layer 69 Inc.,,PA,,,,DBGXX7PNT,6RLXXXSP5,https://docs.dogeos.com/token,,10/11/2026
 Malta Financial Services Authority (MFSA),MT,Kor Technologies Issuer Inc.,,PA,,,,LL5HTKTB5,XPZVV3NDT,https://www.korprotocol.io/mica ,Modified,10/11/2026
+Malta Financial Services Authority (MFSA),MT,Aerodrome Foundation,,KY,,,,,J77TSRV4V,https://aero.xyz/documents/legal-disclosures.pdf,Modified,27/11/2026
+Malta Financial Services Authority (MFSA),MT,"	GLMall Marketplace Ltd",,MT,,,,FWXS3CN04,N2ZNWDDLX,https://www.glbrain.com/download/WhitePaper-%7BToken%20id%7D-%7BEntity%20id%7D-%7BCountry%20code%7D-261117083250-en.xhtml,,27/11/2026
+Malta Financial Services Authority (MFSA),MT,Sei Foundation,,SG,,,,XCDVP53WR,P4JBC8R50,https://my.okx.com/whitepaper/sei-sei.xhtml,Modified,27/11/2026
 Netherlands Authority for the Financial Markets (AFM),NL,Multiverse Asset Limited,,,,,,,,https://zentry.com/micar_whitepaper,wp update,17/06/2025
 Netherlands Authority for the Financial Markets (AFM),NL,TBT Global Ltd,636700MOFSN3S2CJ5G05,VG,,,AT | BE | BG | CY | CZ | DE | DK | EE | ES | FI | FR | GR | HR | HU | IE | IS | IT | LI | LT | LU | LV | MT | NL | NO | PL | PT | RO | SE | SI | SK,TMW71HLQL,"C6H8NF8WP, R6H75ZTXK",https://729569225-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FlcdCcIXgWo7dKoZEUxKp%2Fuploads%2FbXb5p6C0Ytry8qM7L2CU%2F2026-06-30-White-paper-Avalon-Labs-FFG-TMW71HLQL.pdf?alt=media&token=853bd5f0-4d1a-4764-bb58-dc4bb88c70af,wp update,30/06/2026
 Netherlands Authority for the Financial Markets (AFM),NL,MDPR Limited,,,,,,,,https://static.moca.foundation/mica_whitepaper.pdf,wp update,24/06/2025
